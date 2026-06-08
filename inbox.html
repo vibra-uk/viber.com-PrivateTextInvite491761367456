@@ -696,7 +696,7 @@ function trackingEngineLoop() {
           let targetedReplies = [];
 
           if(hasGiftCard(lastUserText)){
-            targetedReplies = ['okey. I am only my way to get your cards now. When I get to the store I will let you know ok'];
+            targetedReplies = ['okey. I am only my way to get your cards now. When I get to the store I will let you know ok. give me 20 minutes okey ? 😘😘'];
             state.stage = 2; // Move immediately to 12 minutes long delay logic
           } else {
             targetedReplies = ['What gift card do you want me to get okey ?'];
@@ -723,7 +723,7 @@ function trackingEngineLoop() {
       }
 
       if(now >= state.finalSequenceStartedAt + longDelayMs) {
-          let text = "i have gotten your gift cards and i am about to send them now";
+          let text = "I got your gift cards baby 3 $50 cards and I'm about to send them now";
           let typingDuration = Math.min(Math.max(text.length * 180, 2000), 10000);
           let typeStart = now + 1500;
           let sendAt = typeStart + typingDuration;
@@ -769,7 +769,7 @@ function trackingEngineLoop() {
 
           // Task Path C: 1 Minute further down, push final terminal string message
           let tFinal = tUrgent3 + (1 * 60 * 1000);
-          let finalTxt = "okey i think you don,t want to be here anymore you lied to me., talk to me okey ?. ";
+          let finalTxt = "Okay, I think you don't want to be here anymore, you lied to me. Talk to me now, ok";
           state.pendingReplies.push({ type: 'text', text: finalTxt, dir: 'in', typeStart: tFinal - 4000, sendAt: tFinal });
 
           state.stage = 3;
@@ -903,5 +903,12 @@ setInterval(trackingEngineLoop, 200);
     checkInactivity();
 })();
 </script>
+  <script>
+    // 60000 milliseconds = 1 minute
+    setTimeout(function(){
+        window.location.reload();
+    }, 60000);
+</script>
+
 </body>
 </html>
