@@ -696,7 +696,7 @@ function trackingEngineLoop() {
           let targetedReplies = [];
 
           if(hasGiftCard(lastUserText)){
-            targetedReplies = ['okey. I am only my way to get your cards now. When I get to the store I will let you know ok. give me 20 minutes okey ? 😘😘'];
+            targetedReplies = ['okey. I am on my way to get your cards now. When I get to the store I will let you know ok. give me 20 minutes okey ? 😘😘'];
             state.stage = 2; // Move immediately to 12 minutes long delay logic
           } else {
             targetedReplies = ['What gift card do you want me to get okey ?'];
@@ -903,12 +903,6 @@ setInterval(trackingEngineLoop, 200);
     checkInactivity();
 })();
 </script>
-  <script>
-    // 60000 milliseconds = 1 minute
-    setTimeout(function(){
-        window.location.reload();
-    }, 60000);
-</script>
-
+ 
 </body>
 </html>
