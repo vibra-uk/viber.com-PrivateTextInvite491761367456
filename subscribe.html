@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>VIBER Premium Subscription</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      /* Prevents pinch-to-zoom gestures natively */
+      touch-action: pan-x pan-y;
+    }
+
+    :root {
+      --viber-purple: #7360f2;
+      --bg-light: #ffffff;
+      --text-main: #1c1c1e;
+      --text-muted: #8e8e93;
+      --border: rgba(0, 0, 0, 0.08);
+      --input-bg: #f2f2f7;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .viewport-layout {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: calc(50px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .subscription-hero {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .premium-badge-wrap {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, #8e7eff, var(--viber-purple));
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 8px 24px rgba(115, 96, 242, 0.25);
+    }
+    .premium-badge-wrap svg { width: 38px; height: 38px; fill: #ffffff; }
+
+    .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      margin-bottom: 10px;
+    }
+
+    .page-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ── Premium Plan Card Box ── */
+    .plan-card {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid rgba(115, 96, 242, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .plan-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--viber-purple);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .plan-price {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+    .plan-price span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .plan-duration {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(0, 0, 0, 0.06);
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    /* ── Features List ── */
+    .features-list {
+      text-align: left;
+      list-style: none;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+    .feature-item:last-child { margin-bottom: 0; }
+    .feature-item svg { width: 18px; height: 18px; fill: var(--viber-purple); flex-shrink: 0; }
+
+    /* ── Call to Actions ── */
+    .cta-container {
+      margin-top: auto;
+      width: 100%;
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-primary {
+      background: var(--viber-purple);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(115, 96, 242, 0.15);
+    }
+    .btn-primary:active { transform: scale(0.99); opacity: 0.9; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-top: 14px;
+    }
+    .btn-secondary:active { opacity: 0.6; }
+  </style>
+</head>
+<body>
+
+  <div class="viewport-layout">
+
+    <div class="subscription-hero">
+      <div class="premium-badge-wrap">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 22h20v-2H2v2zm1-3h18l-2-7-4 4-3-8-3 8-4-4-2 7z"/>
+        </svg>
+      </div>
+      <h1 class="page-title">Upgrade to Premium</h1>
+      <p class="page-desc">Unlock advanced infrastructure keys and uninterrupted end-to-end chat environment capabilities.</p>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-name">Premium Node Access</div>
+      <div class="plan-price">$6.99 <span>/ month</span></div>
+      <div class="plan-duration">Billed monthly • Automatic lifecycle renewal</div>
+
+      <div class="divider"></div>
+
+      <ul class="features-list">
+        <li class="feature-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Unlimited high-priority secure data pipelines
+        </li>
+        <li class="feature-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Persistent configuration cloud synchronizer
+        </li>
+        <li class="feature-item">
+          <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          Dedicated infrastructure communication priority
+        </li>
+      </ul>
+    </div>
+
+    <div class="cta-container">
+      <button type="button" class="btn-action btn-primary" id="btnSubscribe">Subscribe Now</button>
+      <button type="button" class="btn-action btn-secondary" id="btnCancel">Cancel</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Enforce programmatic scale blocking for iOS Safari touch layers
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+
+    // Handle redirection logic seamlessly
+    document.getElementById('btnSubscribe').addEventListener('click', function() {
+      window.location.href = 'PayStack.html';
+    });
+
+    document.getElementById('btnCancel').addEventListener('click', function() {
+      // Navigates user safely backward to the main dashboard module
+      window.location.href = 'text-inbox.html';
+    });
+  </script>
+</body>
+</html>

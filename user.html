@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viber Chat - Heinrich vogel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .viber-chat-container {
+      width: 100%;
+      max-width: 420px;
+      height: 680px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #e1e4ea;
+    }
+
+    /* Top Navigation Bar */
+    .chat-header {
+      background: #fff;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f0f1f4;
+    }
+
+    .back-arrow {
+      color: #7360f2; /* Viber Accent Purple */
+      font-size: 22px;
+      margin-right: 16px;
+      cursor: pointer;
+    }
+
+    .profile-summary {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .profile-status {
+      font-size: 12px;
+      color: #8e8e93;
+      margin-top: 2px;
+    }
+
+    /* Chat Screen Area */
+    .chat-body {
+      flex: 1;
+      background-color: #f7f7fa; /* Styled pattern background substitute */
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* 10/10 Professional Status Notification Box */
+    .system-notification-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(115, 96, 242, 0.04);
+      border: 1px solid #eaebee;
+    }
+
+    .icon-wrapper {
+      width: 56px;
+      height: 56px;
+      background: #f1effd;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 18px;
+    }
+
+    .icon-wrapper svg {
+      width: 26px;
+      height: 26px;
+      fill: #7360f2;
+    }
+
+    .notification-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .notification-message {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .divider {
+      height: 1px;
+      background-color: #f0f1f4;
+      width: 100%;
+      margin-bottom: 18px;
+    }
+
+    .notice-footer {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Disabled Action Input Area */
+    .chat-footer-disabled {
+      background: #f4f5f7;
+      padding: 16px;
+      text-align: center;
+      border-top: 1px solid #e6e8ec;
+    }
+
+    .disabled-text {
+      font-size: 13px;
+      color: #8e8e93;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viber-chat-container">
+
+    <div class="chat-header">
+
+      <a href="./text-inbox.html"><span class="back-arrow">&#10229;</span></a>
+      <div class="profile-summary">
+        <div class="profile-name">Heinrich vogel</div>
+        <div class="profile-status">Unavailable</div>
+      </div>
+    </div>
+
+    <div class="chat-body">
+
+      <div class="system-notification-card">
+        <div class="icon-wrapper">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+        </div>
+        <div class="notification-title">Profile Unavailable</div>
+        <p class="notification-message">
+          The Viber profile for <strong>Heinrich vogel</strong> has been deactivated or permanently deleted. Ongoing chat histories and outbound messaging features to this contact are no longer available.
+        </p>
+        <div class="divider"></div>
+        <div class="notice-footer">
+          Rakuten Viber System Notice
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chat-footer-disabled">
+      <span class="disabled-text">Messaging is disabled for this chat</span>
+    </div>
+
+  </div>
+
+</body>
+</html>

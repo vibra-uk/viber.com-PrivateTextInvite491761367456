@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>VIBER.CO</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --blue: #007aff;
+      --red: #ff3b30;
+      --bg-white: #ffffff;
+      --text-dark: #1c1c1e;
+      --key-bg: #f2f2f7;
+      --key-hover: #e5e5ea;
+      --dot-empty: #d1d1d6;
+    }
+
+    html, body {
+      /* Prevents double-tap zooming and gesture manipulations natively via CSS */
+      touch-action: pan-x pan-y;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-white);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── Main Layout Frame ── */
+    .pin-viewport {
+      flex: 1;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: calc(60px + env(safe-area-inset-top)) 24px calc(30px + env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ── Header Prompt States ── */
+    .prompt-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .prompt-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      margin-bottom: 8px;
+    }
+
+    .prompt-subtitle {
+      font-size: 14px;
+      color: #8e8e93;
+    }
+
+    /* ── Passcode Indicator Dots ── */
+    .dots-container {
+      display: flex;
+      gap: 24px;
+      margin: 30px 0;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--dot-empty);
+      transition: background 0.15s cubic-bezier(0.16, 1, 0.3, 1), transform 0.1s;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .dot.filled {
+      background: var(--text-dark);
+      transform: scale(1.1);
+    }
+
+    /* Shaking animation class when error happens */
+    .shake {
+      animation: iosShake 0.4s ease-in-out;
+    }
+
+    @keyframes iosShake {
+      0%, 100% { transform: translateX(0); }
+      15%, 45%, 75% { transform: translateX(-10px); }
+      30%, 60%, 90% { transform: translateX(10px); }
+    }
+
+    /* ── Custom iOS Passcode Grid Keyboard ── */
+    .ios-keyboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 24px;
+      width: 100%;
+      max-width: 320px;
+      margin-top: auto;
+    }
+
+    .key-btn {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--key-bg);
+      border: none;
+      color: var(--text-dark);
+      font-size: 32px;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .key-btn:active {
+      background: var(--key-hover);
+    }
+
+    .key-btn.transparent {
+      background: transparent;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .key-btn.transparent:active {
+      background: transparent;
+      opacity: 0.6;
+    }
+
+    /* ── Custom iOS Light Alert Dialog Popup ── */
+    .alert-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .alert-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .ios-alert-box {
+      width: 100%;
+      max-width: 274px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      text-align: center;
+      color: var(--text-dark);
+      overflow: hidden;
+      transform: scale(1.15);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .alert-overlay.show .ios-alert-box {
+      transform: scale(1);
+    }
+
+    .alert-content {
+      padding: 20px 16px;
+    }
+
+    .alert-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .alert-desc {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #3a3a3c;
+    }
+
+    .alert-btn {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+      font-size: 17px;
+      color: var(--blue);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .alert-btn:active {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    /* ── Apple Native Fullscreen iOS Light Loader overlay ── */
+    .ios-loader-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .ios-loader-overlay.show { opacity: 1; pointer-events: all; }
+
+    .ios-spinner { position: relative; width: 36px; height: 36px; }
+    .ios-spinner div {
+      position: absolute; width: 10%; height: 28%; background: #8e8e93;
+      left: 44.5%; top: 37%; border-radius: 50px; transform-origin: center 130%;
+      animation: ios-spinner-fade 1s linear infinite;
+    }
+    .ios-spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1s; }
+    .ios-spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -0.9167s; }
+    .ios-spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.8333s; }
+    .ios-spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.75s; }
+    .ios-spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.6667s; }
+    .ios-spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.5833s; }
+    .ios-spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; }
+    .ios-spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4167s; }
+    .ios-spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3333s; }
+    .ios-spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.25s; }
+    .ios-spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1667s; }
+    .ios-spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: -0.0833s; }
+
+    @keyframes ios-spinner-fade {
+      0% { opacity: 1; background: #1c1c1e; }
+      100% { opacity: 0.25; background: #8e8e93; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ios-loader-overlay" id="iosLoader">
+    <div class="ios-spinner">
+      <div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+
+  <div class="alert-overlay" id="alertBox">
+    <div class="ios-alert-box">
+      <div class="alert-content">
+        <h3 class="alert-title">Incorrect PIN</h3>
+        <p class="alert-desc" id="alertMessage">The passcode sequence you typed is invalid. Please double check and re-input your key access code.</p>
+      </div>
+      <button class="alert-btn" id="btnDismissAlert">OK</button>
+    </div>
+  </div>
+
+  <div class="pin-viewport">
+
+    <div class="prompt-header">
+      <h1 class="prompt-title" id="mainPrompt">Create a Passcode</h1>
+      <p class="prompt-subtitle" id="subPrompt">Set a 4-digit security code to secure your private chat node.</p>
+    </div>
+
+    <div class="dots-container" id="dotsGroup">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="ios-keyboard">
+      <button class="key-btn" data-value="1">1</button>
+      <button class="key-btn" data-value="2">2</button>
+      <button class="key-btn" data-value="3">3</button>
+
+      <button class="key-btn" data-value="4">4</button>
+      <button class="key-btn" data-value="5">5</button>
+      <button class="key-btn" data-value="6">6</button>
+
+      <button class="key-btn" data-value="7">7</button>
+      <button class="key-btn" data-value="8">8</button>
+      <button class="key-btn" data-value="9">9</button>
+
+      <button class="key-btn transparent" style="visibility: hidden;"></button>
+      <button class="key-btn" data-value="0">0</button>
+      <button class="key-btn transparent" id="btnDelete">Delete</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Prevent multi-touch gesture pinching natively via JavaScript
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+
+    // Roster of State Controllers
+    let appCurrentState = 'SETUP';
+
+    let generatedPinValue = localStorage.getItem('viber_secure_pin_token') || '';
+    if (generatedPinValue) {
+      appCurrentState = 'LOGIN';
+    }
+
+    const mainPrompt = document.getElementById('mainPrompt');
+    const subPrompt = document.getElementById('subPrompt');
+    const dotsGroup = document.getElementById('dotsGroup');
+    const dots = document.querySelectorAll('#dotsGroup .dot');
+    const alertBox = document.getElementById('alertBox');
+    const alertMessage = document.getElementById('alertMessage');
+    const btnDismissAlert = document.getElementById('btnDismissAlert');
+    const iosLoader = document.getElementById('iosLoader');
+
+    let currentInputBuffer = '';
+    let transientRegistrationPin = '';
+
+    refreshDisplayPrompts();
+
+    function refreshDisplayPrompts() {
+      if (appCurrentState === 'SETUP') {
+        mainPrompt.textContent = "Create a Passcode";
+        subPrompt.textContent = "Set a 4-digit security code to secure your private chat node.";
+      } else if (appCurrentState === 'CONFIRM') {
+        mainPrompt.textContent = "Confirm Passcode";
+        subPrompt.textContent = "Re-enter your 4-digit code to complete authentication sync.";
+      } else if (appCurrentState === 'LOGIN') {
+        mainPrompt.textContent = "Enter Passcode";
+        subPrompt.textContent = "Type your security credentials to open chat database frames.";
+      }
+    }
+
+    // Keyboard Input Capturer
+    document.querySelectorAll('.ios-keyboard .key-btn[data-value]').forEach(button => {
+      button.addEventListener('click', () => {
+        if (currentInputBuffer.length < 4) {
+          currentInputBuffer += button.getAttribute('data-value');
+          updateDotsDisplay();
+
+          if (currentInputBuffer.length === 4) {
+            setTimeout(processInputSequence, 200);
+          }
+        }
+      });
+    });
+
+    // Native Deletion Control
+    document.getElementById('btnDelete').addEventListener('click', () => {
+      if (currentInputBuffer.length > 0) {
+        currentInputBuffer = currentInputBuffer.slice(0, -1);
+        updateDotsDisplay();
+      }
+    });
+
+    function updateDotsDisplay() {
+      dots.forEach((dot, index) => {
+        if (index < currentInputBuffer.length) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+      });
+    }
+
+    // Engine Core Router Matrix
+    function processInputSequence() {
+      if (appCurrentState === 'SETUP') {
+        transientRegistrationPin = currentInputBuffer;
+        currentInputBuffer = '';
+        updateDotsDisplay();
+        appCurrentState = 'CONFIRM';
+        refreshDisplayPrompts();
+
+      } else if (appCurrentState === 'CONFIRM') {
+        if (currentInputBuffer === transientRegistrationPin) {
+          localStorage.setItem('viber_secure_pin_token', currentInputBuffer);
+          generatedPinValue = currentInputBuffer;
+
+          currentInputBuffer = '';
+          updateDotsDisplay();
+          appCurrentState = 'LOGIN';
+          refreshDisplayPrompts();
+
+          triggerSystemAlert("PIN Registered", "Your custom encrypted access passcode framework has been deployed successfully.");
+        } else {
+          triggerInputShakeEffect();
+          triggerSystemAlert("Mismatch Detected", "The codes did not match. Please restart initialization setup and try again.");
+          appCurrentState = 'SETUP';
+          transientRegistrationPin = '';
+          currentInputBuffer = '';
+          updateDotsDisplay();
+          refreshDisplayPrompts();
+        }
+
+      } else if (appCurrentState === 'LOGIN') {
+        if (currentInputBuffer === generatedPinValue) {
+          iosLoader.classList.add('show');
+          setTimeout(() => {
+            window.location.href = 'text-inbox.html';
+          }, 2000);
+        } else {
+          triggerInputShakeEffect();
+          triggerSystemAlert("Incorrect PIN", "The security key code you entered is invalid. Verification sequence failed.");
+          currentInputBuffer = '';
+          updateDotsDisplay();
+        }
+      }
+    }
+
+    function triggerInputShakeEffect() {
+      dotsGroup.classList.add('shake');
+      setTimeout(() => {
+        dotsGroup.classList.remove('shake');
+      }, 400);
+    }
+
+    function triggerSystemAlert(title, message) {
+      alertBox.querySelector('.alert-title').textContent = title;
+      alertMessage.textContent = message;
+      alertBox.classList.add('show');
+    }
+
+    btnDismissAlert.addEventListener('click', () => {
+      alertBox.classList.remove('show');
+    });
+  </script>
+</body>
+</html>

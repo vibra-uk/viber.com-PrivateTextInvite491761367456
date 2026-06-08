@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Viber User Profile</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      touch-action: pan-x pan-y;
+    }
+
+    :root {
+      --viber-purple: #7360f2;
+      --bg-light: #ffffff;
+      --text-main: #1c1c1e;
+      --text-muted: #8e8e93;
+      --border: rgba(0, 0, 0, 0.08);
+      --input-bg: #f2f2f7;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    .viewport-layout {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: calc(40px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .avatar-view-zone {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 18px;
+    }
+    .profile-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .profile-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .data-list-group {
+      width: 100%;
+      background: var(--input-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .data-row:last-child {
+      border-bottom: none;
+    }
+
+    .data-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .data-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(115, 96, 242, 0.12);
+      color: var(--viber-purple);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      background: #ffeeed;
+      color: #ff3b30;
+      cursor: pointer;
+      text-align: center;
+      margin-top: auto;
+    }
+    .btn-logout:active {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport-layout">
+
+    <div class="profile-header">
+      <div class="avatar-view-zone">
+        <img src="" id="displayAvatar" class="profile-avatar" alt="Avatar">
+      </div>
+      <h1 id="displayFullName" class="profile-title">---</h1>
+    </div>
+
+    <div class="data-list-group">
+      <div class="data-row">
+        <span class="data-label">Username Handle</span>
+        <span class="data-value" id="displayUsername" style="color: var(--viber-purple);">@---</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Registered Phone</span>
+        <span class="data-value" id="displayPhone" style="font-family: monospace; font-size:15px;">---</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Encryption Key</span>
+        <span class="status-badge">Active Session</span>
+      </div>
+    </div>
+
+    <button style="background-color: rgb(7, 241, 7); color: white;" type="button" class="btn-logout" id="btLogout"><a style="font-size: 23px; text-decoration: none; outline: none; color: white;" href="./text-inbox.html"><</a></button>
+
+  </div>
+
+  <script>
+    // Enforce anti-pinch scale system natively
+    document.addEventListener('gesturestart', function(e) {
+      e.preventDefault();
+    });
+
+    // Guard route: Bounce user back out if profile data missing
+    if (localStorage.getItem('viber_registered_status') !== 'true') {
+      window.location.replace('index.html');
+    }
+
+    // Populate data parameters seamlessly from client cache instance
+    document.getElementById('displayAvatar').src = localStorage.getItem('viber_avatar_data') || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150&h=150';
+    document.getElementById('displayFullName').textContent = localStorage.getItem('viber_user_name') || 'Anonymous User';
+    document.getElementById('displayUsername').textContent = '@' + (localStorage.getItem('viber_username_handle') || 'user');
+    document.getElementById('displayPhone').textContent = localStorage.getItem('viber_phone_number') || 'none';
+
+    // Disconnect cache data to perform simulation reset flow
+    document.getElementById('btnLogout').addEventListener('click', function() {
+      if(confirm("Are you sure you want to delete your profile cache? This completely clears your local system storage identity configuration.")) {
+        localStorage.clear();
+        window.location.replace('index.html');
+      }
+    });
+  </script>
+  <script>
+(function() {
+    const INACTIVITY_LIMIT = 90000; // 1 minute 30 seconds in milliseconds
+    const REDIRECT_URL = 'pin.html';
+
+    // Don't run the timer if the user is already on the pin page
+    if (window.location.pathname.endsWith(REDIRECT_URL)) return;
+
+    // Function to record the current time as the last active time
+    function resetTimer() {
+        localStorage.setItem('lastActiveTime', Date.now());
+    }
+
+    // Function to check if the user has been inactive for too long
+    function checkInactivity() {
+        const lastActiveTime = localStorage.getItem('lastActiveTime');
+
+        if (lastActiveTime) {
+            const elapsed = Date.now() - parseInt(lastActiveTime, 10);
+
+            if (elapsed >= INACTIVITY_LIMIT) {
+                // Clear the timestamp so it doesn't loop infinitely
+                localStorage.removeItem('lastActiveTime');
+                window.location.href = REDIRECT_URL;
+                return;
+            }
+        } else {
+            // If no timestamp exists yet, set it now
+            resetTimer();
+        }
+    }
+
+    // List of user interactions to track
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+    // Add event listeners to reset the timer on user activity
+    activityEvents.forEach(event => {
+        window.addEventListener(event, resetTimer, true);
+    });
+
+    // Check the inactivity status every 1 second (1000ms)
+    setInterval(checkInactivity, 1000);
+
+    // Also check immediately when the page loads or refreshes
+    checkInactivity();
+})();
+</script>
+</body>
+</html>
