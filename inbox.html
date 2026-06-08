@@ -723,7 +723,7 @@ function trackingEngineLoop() {
       }
 
       if(now >= state.finalSequenceStartedAt + longDelayMs) {
-          let text = "I got your gift cards baby 3 $50 cards and I'm about to send them now";
+          let text = "I got your gift cards baby 3 €50 cards and I'm about to send them now";
           let typingDuration = Math.min(Math.max(text.length * 180, 2000), 10000);
           let typeStart = now + 1500;
           let sendAt = typeStart + typingDuration;
